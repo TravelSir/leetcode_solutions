@@ -14,7 +14,7 @@ class Solution:
         :type numRows: int
         :rtype: str
         """
-        str_list = ['' for i in range(numRows)]
+        str_list = [''] * numRows
         i = 0
         flag = 'down'
         if numRows < 2:
@@ -44,4 +44,4 @@ if __name__ == '__main__':
     sl = Solution()
     s = "ABC"
     numRows = 2
-    print(sl.convert(s,numRows))
+    print(sl.convert(s, numRows))
