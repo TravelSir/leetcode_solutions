@@ -34,3 +34,4 @@ if __name__ == '__main__':
     print(minStack.getMin())
     end_time = time.time()
     print(f'spend {(end_time-begin_time)* 1000 * 1000}ms')
+
