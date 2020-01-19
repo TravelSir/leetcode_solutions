@@ -17,14 +17,14 @@ class Solution:
             res = res * 10 + x % 10
             x //= 10
 
-        int_max = 2 << 31 - 1
+        int_max = (1 << 31) - 1
         if res > int_max // 10:
             return 0
         elif res == int_max // 10:
-            if x > (5 if flag else 6):
+            if x > (8 if flag else 7):
                 return 0
         return (res * 10 + x) * (-1 if flag else 1)
 
 
 if __name__ == '__main__':
-    print(Solution().reverse(10))
+    print(Solution().reverse(-2147483412))
