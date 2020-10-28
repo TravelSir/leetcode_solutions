@@ -36,3 +36,15 @@ class Solution:
                 right += 1
         return left + (0 if nums[left] == val else 1)
 
+    # LeetCode上的一个更简介的解法是: 定义一个没有移除值的最终数组为nums[0...i], 然后遍历数组去维护定义。也是双指针，但不是左右指针的概念，而是两个指针指向两个数组开头，而只是这两个数组恰好重合了。
+    # 从这个解法我学到了一个小技巧就是: 当你要做遍历比较的时候，要得到满足条件长度时，初始化i为-1开始计算，在满足条件时，先加i，再交换值，这样能保证i一定为满足条件数-1。
+    def removeElementEasy(self, nums, val):
+        length = len(nums)
+        i = -1
+        j = 0
+        while j <= length - 1:
+            if nums[j] != val:
+                i += 1
+                nums[i] = nums[j]
+            j += 1
+        return i + 1
