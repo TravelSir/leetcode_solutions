@@ -20,7 +20,6 @@
 from typing import List
 
 
-# TODO
 class Solution:
     def exist(self, board: List[List[str]], word: str) -> bool:
         n = len(board)
