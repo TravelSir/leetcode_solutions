@@ -8,6 +8,8 @@ left为左边第一个元素，right为右边第一个元素，
 - 如果mid<right, 说明最小数在左区间，right=mid
 - 如果mid>right, 说明最小数在有区间，left=mid
 - 如果mid=right，就无法判断最小数在哪个区间，假设最小值是right，因为mid=right，所以我们也可以忽略right，因为right的值是可以被mid替代的，所以right-=1
+
+这里有个情况是，当left < right的时候，那肯定已经是有序了，最小值就肯定是left
 """
 from typing import List
 
@@ -24,6 +26,9 @@ class Solution:
             return nums[0]
 
         while left < right - 1:
+            if nums[left] < nums[right]:
+                return nums[left]
+
             mid = (right - left) // 2 + left
 
             if nums[mid] < nums[right]:
