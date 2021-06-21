@@ -31,7 +31,6 @@ class Solution:
 
         return count
 
-
     @staticmethod
     def check(x, y, k):
         _sum = 0
