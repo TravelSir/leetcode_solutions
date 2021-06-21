@@ -59,5 +59,5 @@ class Solution:
 
 
 if __name__ == '__main__':
-    print(Solution().cuttingRope(6))
+    print(Solution().integerBreak(6))
 
