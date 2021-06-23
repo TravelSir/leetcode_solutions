@@ -1,55 +1,36 @@
 # coding=utf-8
 """
 解题思路：
-首先我们分析模式串，用两个指针分别指向模式串和字符串的头部:
-- 1.1当模式串字符为除.*外的普通字符
-    - 2.1后面是*:
-        - 3.1模式串跳过字符和*, 因为*可以为0次,走1.1或1.2
-        - 3.2匹配一次字符
-            - 4.1如果没匹配到，则直接走3.1
-            - 4.2匹配到了,则继续分别走3.1和3.2
-    - 2.2后面不是*: 一一匹配
-- 1.2当模式串字符为.(*不能单用)
-    - 2.3后面是*:
-        - 3.3模式串跳过.*，因为*可以为0次，走1.1或1.2
-        - 3.4字符串右移一位,继续分别走3.3或3.4
-    - 2.4后面不是*: 因为.可以匹配空字符
-        - 3.5模式串移动1位
-        - 3.6模式串和字符串都右移
+首先我们分析模式串，用两个指针i, j分别指向字符串和模式串的尾部:
+- 当j所指字符为除*外的字符
+    - j所指字符与i所指匹配(两个字符相等或j所指字符为.且i不为空字符), 则两个指针都往左移一位
+    - 不匹配，则为false
+- 当j所指字符为*,因为*不能单用，所以需把j-1和j联合使用，会分叉出多种情况，只要有一种为true就为true
+    - *使用0次，则直接舍弃j和j-1所指字符，j指针向左移动两位
+    - *使用多次，则判断i所指字符与j-1所指字符是否匹配（这j不移动的原因，在于假如匹配成功了，等同与子问题使用*0次丢弃的情况）
+        - 匹配，则i向左移动一位
+        - 不匹配，则False
 
-最后判断模式串和字符串的指针最后是否都还停留在原串内。未停留则标识匹配成功，直接返回True
 
-按照上面的思路实现动态规划的算法:
-假设i为s要匹配的后i位字符，j为模式串p用于匹配的后j位字符
-ls为s长度， lp为p长度
+按照上面的思路实现动态规划的算法，从下到上的实现速度会快很多
+那么我们用f(i,j)表示s的前i个字符和p中的前j个字符能否匹配。
 
 f(i,j) = {
-    false,  当j==0 and i >0
-    true,  当j==0 and i==0
     {
-        false, 当j==1 or p[lp-j+1] != '*'
-        f(i, j-2), 当p[lp-j+1] == '*'
-    }, 当i==0
-    {
-        f(i-1, j-1),  当p[lp-j+1] != '*' or j==2
-        f(i-1, j-2) or f(i-1, j), 当[lp-j+1] == '*'
-    }, 当s[ls-i] == p[lp-j]
-    {
-        {
-            false,   当p[lp-j+1] !='*' or j==2
-            f(i, j-2),  当[lp-j+1] == '*'
-        },  当p[lp-j] != '.'
-        {
-            f(i-1, j-1),  当p[lp-j+1] != '*' or j==1
-            f(i-1, j-2) or f(i-1, j) or f(i, j-2),  当p[lp-j+1] == '*'
-        },  当p[lp-j] == '.'
-    }, 当s[ls-i] != p[lp-j] or i == 0
+        f(i-1, j-1),   match(s[i], p[j])
+        false,         else
+    },                 p[j] != '*'
+    f(i, j-2) or ({
+        f(i-1, j),     match(s[i], p[j-1])
+        false,         else
+    }),                p[j] == '*'
 }
 
+采用自下而上的实现方式，i从0开始，j从1开始，循环记录下前i个字符去匹配前j个字符的结果
+首先f(0, 0) = True
 
 
 """
-from typing import List, Any
 
 
 class Solution:
@@ -60,49 +41,31 @@ class Solution:
         :rtype: bool
         """
 
-        ls = len(s)
-        lp = len(p)
+        def match(i: int, j: int) -> bool:
+            if i == 0:
+                return False
+            if p[j-1] == '.' or s[i-1] == p[j-1]:
+                return True
+            return False
 
-        note = [[0 for i in range(lp+1)] for j in range(ls+1)]
-        return self.dp(ls, lp, s, p, note)
+        m, n = len(s), len(p)
 
-    def dp(self, i: int, j: int, s: str, p: str, note: List[List[Any]]) -> bool:
-        if note[i][j] != 0:
-            return note[i][j]
+        note = [[False] * (n + 1) for _ in range(m + 1)]
+        note[0][0] = True
 
-        ls = len(s)
-        lp = len(p)
-        if j == 0 and i == 0:
-            note[i][j] = True
-        elif j == 0:
-            note[i][j] = False
-        elif i == 0:
-            if j == 1 or p[lp-j+1] != '*':
-                note[i][j] = False
-            else:
-                note[i][j] = self.dp(i, j-2, s, p, note)
-        elif s[ls-i] != p[lp-j]:
-            if p[lp-j] == '.':
-                if j == 1 or p[lp-j+1] != '*':
-                    note[i][j] = self.dp(i-1, j-1, s, p, note)
+        for i in range(m + 1):
+            for j in range(1, n + 1):
+                if p[j - 1] != '*':
+                    if match(i, j):
+                        note[i][j] = note[i-1][j-1]
                 else:
-                    note[i][j] = self.dp(i-1, 0 if j == 1 else j-2, s, p, note) or self.dp(i-1, j, s, p, note) or (False if j==1 else self.dp(i, j-2, s, p, note))
-            else:
-                if j == 1 or p[lp-j+1] != '*':
-                    note[i][j] = False
-                else:
-                    note[i][j] = self.dp(i, 0 if j == 1 else j-2, s, p, note)
-        else:
-            if j == 1 or p[lp-j+1] != '*':
-                note[i][j] = self.dp(i-1, j-1, s, p, note)
-            else:
-                note[i][j] = self.dp(i-1, 0 if j == 1 else j-2, s, p, note) or self.dp(i-1, j, s, p, note) or (False if j==1 else self.dp(i, j-2, s, p, note))
+                    note[i][j] = note[i][j-2] or (note[i-1][j] if match(i, j-1) else False)
 
-        return note[i][j]
+        return note[m][n]
 
 
 if __name__ == '__main__':
-    s = "ab"
-    p = ".*.."
+    s = "aaaaaaaaaaaaab"
+    p = "a*a*a*a*a*a*a*a*a*a*b"
     print(Solution().isMatch(s, p))
 
