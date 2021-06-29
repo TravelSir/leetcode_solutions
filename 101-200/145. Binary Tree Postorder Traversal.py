@@ -48,4 +48,4 @@ if __name__ == '__main__':
     head = TreeNode(1)
     head.right = TreeNode(2)
     head.right.left = TreeNode(3)
-    print(Solution().inorderTraversal(head))
+    print(Solution().postorderTraversal(head))
