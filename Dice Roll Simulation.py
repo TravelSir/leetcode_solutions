@@ -52,3 +52,4 @@ if __name__ == '__main__':
     n = 4
     rollMax = [1, 1, 2, 2, 2, 3]
     print(sl.dieSimulator(n, rollMax))
+
