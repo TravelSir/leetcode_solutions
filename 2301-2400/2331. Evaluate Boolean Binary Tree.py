@@ -20,9 +20,7 @@ class Solution:
     def end_traverse(self, node, result=None):
         if node.left:
             left = self.end_traverse(node.left, result)
-        if node.right:
             right = self.end_traverse(node.right, result)
-        if node.left:
             result = self.calculate(node.val, left, right)
         else:
             result = node.val
