@@ -26,7 +26,8 @@ class Solution:
             result = node.val
         return result
 
-    def calculate(self, op, left, right):
+    @staticmethod
+    def calculate(op, left, right):
         if op == 2:
             return left or right
         else:
